@@ -1,3 +1,5 @@
+use ndarray::prelude::*;
+
 #[derive(Copy, Clone)]
 enum State {
     X,
@@ -11,7 +13,7 @@ struct Cell {
 }
 
 pub struct Board {
-    cells: [[[Cell; 3]; 3]; 3],
+    cells: Array2<Cell>,
 }
 
 impl Default for Board {
@@ -23,7 +25,7 @@ impl Default for Board {
 impl Board {
     pub fn new() -> Board {
         Board {
-            cells: [[[Cell { state: State::Nil }; 3]; 3]; 3],
+			cells: Array2::from_elem((3, 3), Cell { state: State::Nil }),
         }
     }
 }
