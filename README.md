@@ -1,3 +1,3 @@
 # Tic Tac Toe!
 
-WIP
+Simple terminal Tic Tac Toe game based on the University of Warwick's rs118 course.
