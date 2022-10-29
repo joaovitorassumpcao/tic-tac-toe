@@ -1,7 +1,7 @@
 use ndarray::prelude::*;
 
 #[derive(Copy, Clone)]
-enum State {
+pub enum State {
     X,
     O,
     Nil,
@@ -22,6 +22,16 @@ impl Default for Board {
     }
 }
 
+impl Cell {
+	pub fn get(&self) -> State {
+		self.state
+	}
+
+	pub fn set(&mut self, state: State) {
+		self.state = state;
+	}
+}
+
 impl Board {
     pub fn new() -> Board {
         Board {
@@ -29,9 +39,31 @@ impl Board {
         }
     }
 
-	pub fn get_cell_state(&self, x: usize, y: usize) -> String {
-		format!("{}", self.cells[[x, y]].state)
+	pub fn get_cell_state(&self, x: usize, y: usize) -> State {
+		self.cells[[x, y]].get()
 	}
+
+	pub fn set_cell_state(&mut self, x: usize, y: usize, state: State) {
+		self.cells[[x, y]].set(state);
+	}
+
+	pub fn get_row(&self, y: usize) -> Vec<State> {
+		let mut row = Vec::new();
+		for x in 0..3 {
+			row.push(self.get_cell_state(x, y));
+		}
+		row
+	}
+
+	pub fn get_column(&self, x: usize) -> Vec<State> {
+		let mut column = Vec::new();
+		for y in 0..3 {
+			column.push(self.get_cell_state(x, y));
+		}
+		column
+	}
+
+	
 }
 
 
@@ -40,9 +72,9 @@ impl std::fmt::Display for Board {
 		for row in self.cells.outer_iter() {
 			for cell in row {
 				match cell.state {
-					State::X => write!(f, "X")?,
-					State::O => write!(f, "O")?,
-					State::Nil => write!(f, " ")?,
+					State::X => write!(f, " X ")?,
+					State::O => write!(f, " O ")?,
+					State::Nil => write!(f, "   ")?,
 				}
 			}
 			writeln!(f)?;
