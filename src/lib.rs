@@ -72,7 +72,10 @@ impl Board {
         column
     }
 
-	fn 
+    pub fn is_full(&self) -> bool {
+        match self.cells.iter().find(|&&x| x == State::Nil) {}
+    }
+
 }
 
 impl std::fmt::Display for Board {
