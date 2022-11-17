@@ -1,13 +1,13 @@
 use ndarray::prelude::*;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum State {
     X,
     O,
     Nil,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 struct Cell {
     state: State,
 }
@@ -73,9 +73,8 @@ impl Board {
     }
 
     pub fn is_full(&self) -> bool {
-        match self.cells.iter().find(|&&x| x == State::Nil) {}
+        !self.cells.iter().any(|&x| x.state == State::Nil)
     }
-
 }
 
 impl std::fmt::Display for Board {
