@@ -37,24 +37,24 @@ impl Cell {
 /// X and O are the states of the two players.
 /// The board is initialized with all cells in the Nil state.
 impl Board {
-	/// Creates a new board with all cells in the Nil state.
+    /// Creates a new board with all cells in the Nil state.
     pub fn new() -> Board {
         Board {
             cells: Array2::from_elem((3, 3), Cell { state: State::Nil }),
         }
     }
 
-	/// Returns the state of the cell at the given coordinates.
+    /// Returns the state of the cell at the given coordinates.
     pub fn get_cell_state(&self, x: usize, y: usize) -> State {
         self.cells[[x, y]].get()
     }
 
-	/// Sets the state of the cell at the given coordinates.
+    /// Sets the state of the cell at the given coordinates.
     pub fn set_cell_state(&mut self, x: usize, y: usize, state: State) {
         self.cells[[x, y]].set(state);
     }
 
-	/// Returns the row at the given index.
+    /// Returns the row at the given index.
     pub fn get_row(&self, y: usize) -> Vec<State> {
         let mut row = Vec::new();
         for x in 0..3 {
@@ -63,7 +63,7 @@ impl Board {
         row
     }
 
-	/// Returns the column at the given index.
+    /// Returns the column at the given index.
     pub fn get_column(&self, x: usize) -> Vec<State> {
         let mut column = Vec::new();
         for y in 0..3 {
