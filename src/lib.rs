@@ -1,19 +1,15 @@
-use ndarray::prelude::*;
+use std::fmt;
 
-#[derive(Copy, Clone, PartialEq)]
-pub enum State {
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum Player {
     X,
     O,
-    Nil,
-}
-
-#[derive(Copy, Clone, PartialEq)]
-struct Cell {
-    state: State,
 }
 
 pub struct Board {
-    cells: Array2<Cell>,
+    cells: [[Option<Player>; 3]; 3],
+    turn: Player,
+    winner: Option<Player>,
 }
 
 impl Default for Board {
@@ -22,93 +18,87 @@ impl Default for Board {
     }
 }
 
-impl Cell {
-    pub fn get(&self) -> State {
-        self.state
-    }
-
-    pub fn set(&mut self, state: State) {
-        self.state = state;
-    }
-}
-
-/// Board is a 3x3 grid of cells. Each cell can be in one of three states: X, O, or Nil.
-/// Nil is the default state.
-/// X and O are the states of the two players.
-/// The board is initialized with all cells in the Nil state.
 impl Board {
-	/// Creates a new board with all cells in the Nil state.
+    /// Creates a new board with all cells in the Nil state.
     pub fn new() -> Board {
         Board {
-            cells: Array2::from_elem((3, 3), Cell { state: State::Nil }),
+            cells: [[None; 3]; 3],
+            turn: Player::X,
+            winner: None,
         }
     }
 
-	/// Returns the state of the cell at the given coordinates.
-    pub fn get_cell_state(&self, x: usize, y: usize) -> State {
-        self.cells[[x, y]].get()
-    }
-
-	/// Sets the state of the cell at the given coordinates.
-    pub fn set_cell_state(&mut self, x: usize, y: usize, state: State) {
-        self.cells[[x, y]].set(state);
-    }
-
-	/// Returns the row at the given index.
-    pub fn get_row(&self, y: usize) -> Vec<State> {
-        let mut row = Vec::new();
-        for x in 0..3 {
-            row.push(self.get_cell_state(x, y));
-        }
-        row
-    }
-
-	/// Returns the column at the given index.
-    pub fn get_column(&self, x: usize) -> Vec<State> {
-        let mut column = Vec::new();
-        for y in 0..3 {
-            column.push(self.get_cell_state(x, y));
-        }
-        column
-    }
-
-    pub fn is_full(&self) -> bool {
-        !self.cells.iter().any(|&x| x.state == State::Nil)
-    }
-}
-
-impl std::fmt::Display for Board {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        for row in self.cells.outer_iter() {
+    pub fn print_board(&self) {
+        println!("-------------");
+        for row in self.cells {
             for cell in row {
-                match cell.state {
-                    State::X => write!(f, " X ")?,
-                    State::O => write!(f, " O ")?,
-                    State::Nil => write!(f, "   ")?,
+                print!("|");
+                match cell {
+                    Some(player) => print!("{player}"),
+                    None => print!("   "),
                 }
             }
-            writeln!(f)?;
+            print!("|");
+            println!("\n-------------");
         }
+    }
+
+    pub fn get_cell(&self, row: usize, col: usize) -> Option<Player> {
+        self.cells[row][col]
+    }
+
+    pub fn set_cell(&mut self, row: usize, col: usize) -> Result<(), String> {
+        if self.cells[row][col].is_some() {
+            return Err("Cell is already occupied".to_string());
+        }
+        self.cells[row][col] = Some(self.turn);
+        self.turn = match self.turn {
+            Player::X => Player::O,
+            Player::O => Player::X,
+        };
         Ok(())
     }
-}
 
-impl std::fmt::Display for Cell {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self.state {
-            State::X => write!(f, "X"),
-            State::O => write!(f, "O"),
-            State::Nil => write!(f, " "),
+    pub fn get_winner(&self) -> Option<Player> {
+        self.winner
+    }
+
+    pub fn set_winner(&mut self, winner: Option<Player>) {
+        self.winner = winner;
+    }
+
+    pub fn check_winner(&self) -> Option<Player> {
+        let mut winner = None;
+        for row in self.cells {
+            if row[0] == row[1] && row[1] == row[2] {
+                winner = row[0];
+            }
         }
+        for col in 0..3 {
+            if self.cells[0][col] == self.cells[1][col] && self.cells[1][col] == self.cells[2][col]
+            {
+                winner = self.cells[0][col];
+            }
+        }
+        if self.cells[0][0] == self.cells[1][1] && self.cells[1][1] == self.cells[2][2] {
+            winner = self.cells[0][0];
+        }
+        if self.cells[0][2] == self.cells[1][1] && self.cells[1][1] == self.cells[2][0] {
+            winner = self.cells[0][2];
+        }
+        winner
     }
 }
 
-impl std::fmt::Display for State {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            State::X => write!(f, "X"),
-            State::O => write!(f, "O"),
-            State::Nil => write!(f, " "),
-        }
+impl fmt::Display for Player {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                Player::X => "X",
+                Player::O => "O",
+            }
+        )
     }
 }
