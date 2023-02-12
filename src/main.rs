@@ -1,15 +1,20 @@
-use crossterm::{queue, style::Print};
-use std::io::{stdout, Write};
+//use crossterm::{queue, style::Print};
+//use std::io::{stdout, Write};
 use tic_tac_toe::*;
 
 fn main() {
-    let mut stdout = stdout().lock();
     let mut board = Board::new();
 
-    queue!(stdout, board);
-    stdout.flush().expect("flush to stdout before loop.");
-    write!()
-    //loop {
-
-    //}
+    println!("-------------");
+    for row in board.cells {
+        for cell in row {
+            print!("|");
+            match cell {
+                Some(player) => print!("{}", player),
+                None => print!("   "),
+            }
+        }
+        print!("|");
+        println!("\n-------------");
+    }
 }
